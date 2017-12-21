@@ -2,6 +2,7 @@ package raven.mongodb.repository;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -16,6 +17,7 @@ import java.util.List;
 public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
         extends MongoReaderRepositoryImpl<TEntity, TKey>
         implements MongoRepository<TEntity, TKey> {
+
 
     //#region 构造函数
 
@@ -55,6 +57,80 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
 
     //#endregion
 
+    /**
+     * 创建自增ID
+     *
+     * @param entity
+     * @throws FailedException
+     */
+    @Override
+    public void createIncID(final TEntity entity)
+            throws FailedException {
+        long _id = 0;
+        _id = this.createIncID();
+        assignmentEntityID(entity, _id);
+    }
+
+    /**
+     * 创建ObjectId
+     *
+     * @param entity
+     */
+    @Override
+    public void createObjectID(final TEntity entity) {
+        ObjectId _id = new ObjectId();
+        assignmentEntityID(entity, _id);
+    }
+
+
+    /**
+     * @return
+     * @throws FailedException
+     */
+    @Override
+    public long createIncID() throws FailedException {
+        return createIncID(1);
+    }
+
+    /**
+     * @param inc
+     * @return
+     * @throws FailedException
+     */
+    @Override
+    public long createIncID(final long inc) throws FailedException {
+        return createIncID(inc, 0);
+    }
+
+    /**
+     * @param inc
+     * @param iteration
+     * @return
+     * @throws FailedException
+     */
+    @Override
+    public long createIncID(final long inc, final int iteration) throws FailedException {
+        long id = 1;
+        MongoCollection<BsonDocument> collection = getDatabase().getCollection(super._sequence.getSequenceName(), BsonDocument.class);
+        String typeName = getCollectionName();
+
+        Bson filter = Filters.eq(super._sequence.getCollectionName(), typeName);
+        Bson updater = Updates.inc(super._sequence.getIncrementID(), inc);
+        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions();
+        options = options.upsert(true).returnDocument(ReturnDocument.AFTER);
+
+        BsonDocument result = collection.findOneAndUpdate(filter, updater, options);
+        if (result != null) {
+            id = result.getInt64(super._sequence.getIncrementID()).longValue();
+            //id = result[super._sequence.getIncrementID()].AsInt64;
+            return id;
+        } else if (iteration <= 1) {
+            return createIncID(inc, (iteration + 1));
+        } else {
+            throw new FailedException("Failed to get on the IncID");
+        }
+    }
+
     //#region insert
 
     /**
@@ -76,9 +152,9 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
     public void insert(final TEntity entity, final WriteConcern writeConcern)
             throws FailedException {
         if (isAutoIncrClass) {
-            super.createIncID(entity);
-        } else if (keyClazz.equals(Util.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
-            super.createObjectID(entity);
+            createIncID(entity);
+        } else if (keyClazz.equals(Common.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
+            createObjectID(entity);
         }
         super.getCollection(writeConcern).insertOne(entity);
     }
@@ -111,10 +187,10 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
             for (TEntity entity : entitys) {
                 assignmentEntityID(entity, ++id);
             }
-        } else if (keyClazz.equals(Util.OBJECT_ID_CLASS)) {
+        } else if (keyClazz.equals(Common.OBJECT_ID_CLASS)) {
             for (TEntity entity : entitys) {
                 if (((Entity<ObjectId>) entity).getId() == null) {
-                    super.createObjectID(entity);
+                    createObjectID(entity);
                 }
             }
         }
@@ -134,12 +210,12 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
             throws FailedException {
         long id = 0;
         BsonDocument bsDoc = super.toBsonDocument(updateEntity);
-        bsDoc.remove(Util.PRIMARY_KEY_NAME);
+        bsDoc.remove(Common.PRIMARY_KEY_NAME);
 
         Bson update = new BsonDocument("$set", bsDoc);
         if (isUpsert && isAutoIncrClass) {
             id = createIncID();
-            update = Updates.combine(update, Updates.setOnInsert(Util.PRIMARY_KEY_NAME, id));
+            update = Updates.combine(update, Updates.setOnInsert(Common.PRIMARY_KEY_NAME, id));
         }
 
         return update;
@@ -159,6 +235,21 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
     public UpdateResult updateOne(final Bson filter, final TEntity updateEntity)
             throws FailedException {
         return this.updateOne(filter, updateEntity, false, null);
+    }
+
+    /**
+     * 修改单条数据
+     *
+     * @param filter
+     * @param updateEntity
+     * @param isUpsert
+     * @return
+     */
+    @Override
+    public UpdateResult updateOne(final Bson filter, final TEntity updateEntity, final Boolean isUpsert)
+            throws FailedException {
+
+        return this.updateOne(filter, updateEntity, isUpsert, null);
     }
 
     /**
@@ -191,9 +282,20 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public UpdateResult updateOne(final Bson filter, final Bson update) {
+        return this.updateOne(filter, update, false, null);
+    }
 
-        UpdateOptions options = new UpdateOptions();
-        return super.getCollection().updateOne(filter, update, options);
+    /**
+     * 修改单条数据
+     *
+     * @param filter
+     * @param update
+     * @param isUpsert
+     * @return
+     */
+    @Override
+    public UpdateResult updateOne(final Bson filter, final Bson update, final Boolean isUpsert) {
+        return this.updateOne(filter, update, isUpsert, null);
     }
 
     /**
@@ -355,7 +457,7 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public DeleteResult deleteOne(final TKey id) {
-        Bson filter = Filters.eq(Util.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
         return super.getCollection().deleteOne(filter);
     }
 
@@ -366,7 +468,7 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public DeleteResult deleteOne(final TKey id, final WriteConcern writeConcern) {
-        Bson filter = Filters.eq(Util.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
         return super.getCollection(writeConcern).deleteOne(filter);
     }
 

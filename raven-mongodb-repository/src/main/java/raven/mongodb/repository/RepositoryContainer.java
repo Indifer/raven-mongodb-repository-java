@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -141,12 +140,12 @@ public class RepositoryContainer {
 
         for (String packageName : packageNames) {
 
-            List<Class> clazzList = Util.getAllClassByInterface(MongoBaseRepository.class, packageName);
+            List<Class> clazzList = Common.getAllClassByInterface(MongoBaseRepository.class, packageName);
             MongoBaseRepository repos;
             for (Class clazz : clazzList) {
                 repos = null;
                 try {
-                    Method method = clazz.getDeclaredMethod(Util.CREATE_INSTANCE_METHOD, null);
+                    Method method = clazz.getDeclaredMethod(Common.CREATE_INSTANCE_METHOD, null);
                     method.setAccessible(true);
                     repos = (MongoBaseRepository) method.invoke(null, null);
                 } catch (Exception ex) {

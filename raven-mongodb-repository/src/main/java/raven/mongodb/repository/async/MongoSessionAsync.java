@@ -1,11 +1,10 @@
-package raven.mongodb.repository;
+package raven.mongodb.repository.async;
 
-import com.mongodb.*;
-import com.mongodb.client.*;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
+import com.mongodb.async.client.*;
 
-
-public class MongoSession {
-
+public class MongoSessionAsync {
     /**
      * MongoDB WriteConcern
      */
@@ -23,6 +22,7 @@ public class MongoSession {
     public ReadPreference get_readPreference() {
         return _readPreference;
     }
+
 
     /**
      * MongoClient
@@ -47,16 +47,16 @@ public class MongoSession {
      * @param isSlaveOK
      * @param readPreference
      */
-    public MongoSession(final String connString, final String dbName, final WriteConcern writeConcern, final Boolean isSlaveOK, final ReadPreference readPreference) {
+    public MongoSessionAsync(final String connString, final String dbName, final WriteConcern writeConcern, final Boolean isSlaveOK, final ReadPreference readPreference) {
         //this(new MongoClient(connString), dbName, writeConcern, isSlaveOK, readPreference);
         this._writeConcern = writeConcern != null ? writeConcern : WriteConcern.UNACKNOWLEDGED;
         this._readPreference = readPreference != null ? readPreference : ReadPreference.secondaryPreferred();
 
-        MongoClientURI mongoClientURI = new MongoClientURI(connString);
-        _mongoClient = new MongoClient(mongoClientURI);
+        _mongoClient = MongoClients.create(connString);
+
+        //MongoClientURI mongoClientURI = new MongoClientURI(connString);
+        //_mongoClient = new MongoClient(mongoClientURI);
 
         database = _mongoClient.getDatabase(dbName).withReadPreference(this._readPreference).withWriteConcern(this._writeConcern);
     }
-
-
 }

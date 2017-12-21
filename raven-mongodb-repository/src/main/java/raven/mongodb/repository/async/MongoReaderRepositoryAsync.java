@@ -1,15 +1,20 @@
-package raven.mongodb.repository;
+package raven.mongodb.repository.async;
 
 import com.mongodb.ReadPreference;
 import org.bson.BsonValue;
 import org.bson.conversions.Bson;
-import raven.mongodb.repository.exceptions.FailedException;
+import raven.mongodb.repository.CountOptions;
+import raven.mongodb.repository.ExistsOptions;
+import raven.mongodb.repository.FindOptions;
+import raven.mongodb.repository.MongoBaseRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public interface MongoReaderRepository<TEntity, TKey>
-        extends MongoBaseRepository<TEntity> {
+public interface MongoReaderRepositoryAsync<TEntity, TKey>
+        extends MongoBaseRepositoryAsync<TEntity> {
+
 
     /**
      * 根据id获取实体
@@ -17,7 +22,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param id
      * @return
      */
-    TEntity get(TKey id);
+   CompletableFuture<TEntity> getAsync(TKey id);
 
     /**
      * 根据id获取实体
@@ -26,7 +31,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param includeFields 查询字段
      * @return
      */
-    TEntity get(TKey id, List<String> includeFields);
+    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields);
 
     /**
      * 根据id获取实体
@@ -36,7 +41,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param sort          排序
      * @return
      */
-    TEntity get(TKey id, List<String> includeFields, Bson sort);
+    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields, Bson sort);
 
     /**
      * 根据id获取实体
@@ -48,7 +53,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param readPreference 访问设置
      * @return
      */
-    TEntity get(TKey id, List<String> includeFields, Bson sort, BsonValue hint
+    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields, Bson sort, BsonValue hint
             , ReadPreference readPreference);
 
 
@@ -58,7 +63,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param filter 查询条件
      * @return
      */
-    TEntity get(Bson filter);
+    CompletableFuture<TEntity> getAsync(Bson filter);
 
     /**
      * 根据条件获取实体
@@ -67,7 +72,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param includeFields 查询字段
      * @return
      */
-    TEntity get(Bson filter, List<String> includeFields);
+    CompletableFuture<TEntity> getAsync(Bson filter, List<String> includeFields);
 
     /**
      * 根据条件获取实体
@@ -77,7 +82,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param sort          排序
      * @return
      */
-    TEntity get(Bson filter, List<String> includeFields, Bson sort);
+    CompletableFuture<TEntity> getAsync(Bson filter, List<String> includeFields, Bson sort);
 
     /**
      * 根据条件获取实体
@@ -89,7 +94,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param readPreference 访问设置
      * @return
      */
-    TEntity get(Bson filter, List<String> includeFields, Bson sort, BsonValue hint
+    CompletableFuture<TEntity> getAsync(Bson filter, List<String> includeFields, Bson sort, BsonValue hint
             , ReadPreference readPreference);
 
     /**
@@ -98,7 +103,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param findOptions
      * @return
      */
-    TEntity get(FindOptions findOptions);
+    CompletableFuture<TEntity> getAsync(FindOptions findOptions);
 
     //#endregion
 
@@ -110,7 +115,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param filter 查询条件
      * @return
      */
-    ArrayList<TEntity> getList(Bson filter);
+    CompletableFuture<ArrayList<TEntity>> getListAsync(Bson filter);
 
     /**
      * 根据条件获取获取列表
@@ -119,7 +124,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param includeFields 查询字段
      * @return
      */
-    ArrayList<TEntity> getList(Bson filter, List<String> includeFields);
+    CompletableFuture<ArrayList<TEntity>> getListAsync(Bson filter, List<String> includeFields);
 
     /**
      * 根据条件获取获取列表
@@ -129,7 +134,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param sort          排序
      * @return
      */
-    ArrayList<TEntity> getList(Bson filter, List<String> includeFields, Bson sort);
+    CompletableFuture<ArrayList<TEntity>> getListAsync(Bson filter, List<String> includeFields, Bson sort);
 
     /**
      * 根据条件获取获取列表
@@ -141,7 +146,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param skip
      * @return
      */
-    ArrayList<TEntity> getList(Bson filter, List<String> includeFields, Bson sort
+    CompletableFuture<ArrayList<TEntity>> getListAsync(Bson filter, List<String> includeFields, Bson sort
             , int limit, int skip);
 
     /**
@@ -156,7 +161,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param readPreference 访问设置
      * @return
      */
-    ArrayList<TEntity> getList(Bson filter, List<String> includeFields, Bson sort
+    CompletableFuture<ArrayList<TEntity>> getListAsync(Bson filter, List<String> includeFields, Bson sort
             , int limit, int skip
             , BsonValue hint
             , ReadPreference readPreference);
@@ -168,7 +173,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param findOptions
      * @return
      */
-    ArrayList<TEntity> getList(FindOptions findOptions);
+    CompletableFuture<ArrayList<TEntity>> getListAsync(FindOptions findOptions);
 
     //#endregion
 
@@ -178,7 +183,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param filter 查询条件
      * @return
      */
-    long count(Bson filter);
+    CompletableFuture<Long> countAsync(Bson filter);
 
     /**
      * 数量
@@ -189,7 +194,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param readPreference 访问设置
      * @return
      */
-    long count(Bson filter, int skip, BsonValue hint
+    CompletableFuture<Long> countAsync(Bson filter, int skip, BsonValue hint
             , ReadPreference readPreference);
 
 
@@ -199,7 +204,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param countOptions
      * @return
      */
-    long count(CountOptions countOptions);
+    CompletableFuture<Long> countAsync(CountOptions countOptions);
 
     /**
      * 是否存在
@@ -207,7 +212,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param filter
      * @return
      */
-    boolean exists(Bson filter);
+    CompletableFuture<Boolean> existsAsync(Bson filter);
 
     /**
      * 是否存在
@@ -217,7 +222,7 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param readPreference
      * @return
      */
-    boolean exists(Bson filter, BsonValue hint
+    CompletableFuture<Boolean> existsAsync(Bson filter, BsonValue hint
             , ReadPreference readPreference);
 
     /**
@@ -226,5 +231,5 @@ public interface MongoReaderRepository<TEntity, TKey>
      * @param existsOptions
      * @return
      */
-    boolean exists(ExistsOptions existsOptions);
+    CompletableFuture<Boolean> existsAsync(ExistsOptions existsOptions);
 }

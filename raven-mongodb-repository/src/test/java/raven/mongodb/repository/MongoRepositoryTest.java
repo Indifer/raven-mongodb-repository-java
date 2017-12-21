@@ -38,7 +38,6 @@ public class MongoRepositoryTest {
         Assert.assertEquals(user.getName(), uuid);
 
 
-
         Mall mall = new Mall();
         mall.setName("shopping mall");
 
@@ -68,7 +67,7 @@ public class MongoRepositoryTest {
             Assert.assertNotEquals(user.getId().longValue(), 0);
         }
 
-        long count = repos.count(null);
+        long count = repos.count(CountOptions.Empty());
         Assert.assertEquals(count, size);
 
     }

@@ -38,7 +38,7 @@ public class MongoSequence {
      * @param collectionName
      * @param incrementID
      */
-    MongoSequence(final String sequence, final String collectionName, final String incrementID) {
+    public MongoSequence(final String sequence, final String collectionName, final String incrementID) {
         this.sequenceName = sequence;
         this.collectionName = collectionName;
         this.incrementID = incrementID;
@@ -47,7 +47,7 @@ public class MongoSequence {
     /**
      *
      */
-    MongoSequence() {
+    public MongoSequence() {
 
         this.sequenceName = "_Sequence";
         this.collectionName = "_id";

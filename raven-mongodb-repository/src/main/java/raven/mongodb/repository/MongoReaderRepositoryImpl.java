@@ -3,24 +3,23 @@ package raven.mongodb.repository;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.*;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 import raven.data.entity.Entity;
-import raven.mongodb.repository.exceptions.FailedException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 只读数据仓储
+ *
  * @param <TEntity>
  * @param <TKey>
  */
 public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
-        extends MongoBaseRepositoryImpl<TEntity, TKey>
+        extends AbstractMongoBaseRepository<TEntity, TKey>
         implements MongoReaderRepository<TEntity, TKey> {
 
     //#region 构造函数
@@ -61,79 +60,7 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
 
     //#endregion
 
-    /**
-     * @return
-     * @throws FailedException
-     */
-    @Override
-    public long createIncID() throws FailedException {
-        return createIncID(1);
-    }
-
-    /**
-     * @param inc
-     * @return
-     * @throws FailedException
-     */
-    @Override
-    public long createIncID(final long inc) throws FailedException {
-        return createIncID(inc, 0);
-    }
-
-    /**
-     * @param inc
-     * @param iteration
-     * @return
-     * @throws FailedException
-     */
-    @Override
-    public long createIncID(final long inc, final int iteration) throws FailedException {
-        long id = 1;
-        MongoCollection<BsonDocument> collection = getDatabase().getCollection(super._sequence.getSequenceName(), BsonDocument.class);
-        String typeName = getCollectionName();
-
-        Bson filter = Filters.eq(super._sequence.getCollectionName(), typeName);
-        Bson updater = Updates.inc(super._sequence.getIncrementID(), inc);
-        FindOneAndUpdateOptions options = new FindOneAndUpdateOptions();
-        options = options.upsert(true).returnDocument(ReturnDocument.AFTER);
-
-        BsonDocument result = collection.findOneAndUpdate(filter, updater, options);
-        if (result != null) {
-            id = result.getInt64(super._sequence.getIncrementID()).longValue();
-            //id = result[super._sequence.getIncrementID()].AsInt64;
-            return id;
-        } else if (iteration <= 1) {
-            return createIncID(inc, (iteration + 1));
-        } else {
-            throw new FailedException("Failed to get on the IncID");
-        }
-    }
-
     //#region get
-
-    /**
-     * 创建自增ID
-     *
-     * @param entity
-     * @throws FailedException
-     */
-    @Override
-    public void createIncID(final TEntity entity)
-            throws FailedException {
-        long _id = 0;
-        _id = this.createIncID();
-        assignmentEntityID(entity, _id);
-    }
-
-    /**
-     * 创建ObjectId
-     *
-     * @param entity
-     */
-    public void createObjectID(final TEntity entity) {
-        ObjectId _id = new ObjectId();
-        assignmentEntityID(entity, _id);
-    }
 
     /**
      * 根据id获取实体
@@ -185,11 +112,11 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
     public TEntity get(final TKey id, final List<String> includeFields, final Bson sort, final BsonValue hint
             , final ReadPreference readPreference) {
 
-        Bson filter = Filters.eq(Util.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
 
         Bson projection = null;
         if (includeFields != null) {
-            projection = super.IncludeFields(includeFields);
+            projection = super.includeFields(includeFields);
         }
 
         FindIterable<TEntity> result = super.getCollection(readPreference).find(filter, entityClazz);
@@ -197,7 +124,6 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
 
         return result.first();
     }
-
 
     /**
      * 根据条件获取实体
@@ -257,13 +183,24 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
 
         Bson projection = null;
         if (includeFields != null) {
-            projection = super.IncludeFields(includeFields);
+            projection = super.includeFields(includeFields);
         }
 
         FindIterable<TEntity> result = super.getCollection(readPreference).find(_filter, entityClazz);
         result = super.findOptions(result, projection, sort, 1, 0, hint);
 
         return result.first();
+    }
+
+    /**
+     * 根据条件获取实体
+     *
+     * @param findOptions
+     * @return
+     */
+    @Override
+    public TEntity get(final FindOptions findOptions) {
+        return this.get(findOptions.getFilter(), findOptions.getIncludeFields(), findOptions.getSort(), findOptions.getHint(), findOptions.getReadPreference());
     }
 
     //#endregion
@@ -318,7 +255,7 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public ArrayList<TEntity> getList(final Bson filter, final List<String> includeFields, final Bson sort
-            , int limit, int skip) {
+            , final int limit, final int skip) {
         return this.getList(filter, includeFields, sort, limit, skip, null, null);
     }
 
@@ -336,9 +273,9 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public ArrayList<TEntity> getList(final Bson filter, final List<String> includeFields, final Bson sort
-            , int limit, int skip
-            , BsonValue hint
-            , ReadPreference readPreference) {
+            , final int limit, final int skip
+            , final BsonValue hint
+            , final ReadPreference readPreference) {
 
         Bson _filter = filter;
         if (_filter == null) {
@@ -347,7 +284,7 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
 
         Bson projection = null;
         if (includeFields != null) {
-            projection = super.IncludeFields(includeFields);
+            projection = super.includeFields(includeFields);
         }
 
         FindIterable<TEntity> result = super.getCollection(readPreference).find(_filter, entityClazz);
@@ -361,6 +298,17 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
         return list;
     }
 
+    /**
+     * 根据条件获取获取列表
+     *
+     * @param findOptions
+     * @return
+     */
+    @Override
+    public ArrayList<TEntity> getList(final FindOptions findOptions) {
+        return this.getList(findOptions.getFilter(), findOptions.getIncludeFields(), findOptions.getSort(), findOptions.getLimit(), findOptions.getSkip(), findOptions.getHint(), findOptions.getReadPreference());
+    }
+
     //#endregion
 
     /**
@@ -371,21 +319,20 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public long count(final Bson filter) {
-        return this.count(filter, 0, 0, null, null);
+        return this.count(filter, 0, null, null);
     }
 
     /**
      * 数量
      *
      * @param filter         查询条件
-     * @param limit
      * @param skip
      * @param hint           hint索引
      * @param readPreference 访问设置
      * @return
      */
     @Override
-    public long count(final Bson filter, final int limit, final int skip, final BsonValue hint
+    public long count(final Bson filter, final int skip, final BsonValue hint
             , final ReadPreference readPreference) {
 
         Bson _filter = filter;
@@ -394,10 +341,25 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
         }
 
         CountOptions option = new CountOptions();
-        option.limit(limit);
-        option.limit(skip);
+        option.skip(skip);
 
         return super.getCollection(readPreference).count(_filter, option);
+    }
+
+    /**
+     * 数量
+     *
+     * @param countOptions
+     * @return
+     */
+    public long count(final CountOptions countOptions) {
+
+        Bson _filter = countOptions.getFilter();
+        if (_filter == null) {
+            _filter = new BsonDocument();
+        }
+
+        return super.getCollection(countOptions.getReadPreference()).count(_filter, countOptions);
     }
 
     /**
@@ -408,7 +370,7 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public boolean exists(final Bson filter) {
-        return exists(filter, null, null);
+        return this.exists(filter, null, null);
     }
 
     /**
@@ -420,8 +382,8 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      * @return
      */
     @Override
-    public boolean exists(final Bson filter,final  BsonValue hint
-            ,final  ReadPreference readPreference) {
+    public boolean exists(final Bson filter, final BsonValue hint
+            , final ReadPreference readPreference) {
 
         Bson _filter = filter;
         if (_filter == null) {
@@ -429,9 +391,20 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
         }
 
         List<String> includeFields = new ArrayList<>(1);
-        includeFields.add(Util.PRIMARY_KEY_NAME);
+        includeFields.add(Common.PRIMARY_KEY_NAME);
 
         return this.get(_filter, includeFields, null, hint, readPreference) != null;
+    }
+
+    /**
+     * 是否存在
+     *
+     * @param existsOptions
+     * @return
+     */
+    @Override
+    public boolean exists(final ExistsOptions existsOptions) {
+        return this.exists(existsOptions.getFilter(), existsOptions.getHint(), existsOptions.getReadPreference());
     }
 
 }

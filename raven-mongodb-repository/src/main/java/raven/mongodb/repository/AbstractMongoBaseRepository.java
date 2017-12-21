@@ -3,7 +3,6 @@ package raven.mongodb.repository;
 import com.mongodb.*;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
-import com.sun.javafx.tk.TKClipboard;
 import org.bson.BsonDocument;
 import org.bson.BsonDocumentWrapper;
 import org.bson.BsonValue;
@@ -27,7 +26,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
  * @param <TEntity>
  * @param <TKey>
  */
-public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey>
+public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, TKey>
         implements MongoBaseRepository<TEntity> {
     protected Class<TEntity> entityClazz;
     protected Class<TKey> keyClazz;
@@ -65,12 +64,12 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
 
     //#region 构造函数
 
-    private MongoBaseRepositoryImpl() {
+    private AbstractMongoBaseRepository() {
         Type genType = getClass().getGenericSuperclass();
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
         entityClazz = (Class) params[0];
         keyClazz = (Class) params[1];
-        isAutoIncrClass = Util.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
+        isAutoIncrClass = Common.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
         pojoCodecRegistry = MongoClient.getDefaultCodecRegistry();
 
@@ -91,7 +90,7 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
      * @see WriteConcern
      * @see ReadPreference
      */
-    public MongoBaseRepositoryImpl(final String connString, final String dbName, final String collectionName, final WriteConcern writeConcern, final ReadPreference readPreference, final MongoSequence sequence) {
+    public AbstractMongoBaseRepository(final String connString, final String dbName, final String collectionName, final WriteConcern writeConcern, final ReadPreference readPreference, final MongoSequence sequence) {
         this();
         this._sequence = sequence != null ? sequence : new MongoSequence();
         this._mongoSession = new MongoSession(connString, dbName, writeConcern, false, readPreference);
@@ -108,7 +107,7 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
      * @param connString 数据库连接节点
      * @param dbName     数据库名称
      */
-    public MongoBaseRepositoryImpl(final String connString, final String dbName) {
+    public AbstractMongoBaseRepository(final String connString, final String dbName) {
         this(connString, dbName, null, null, null, null);
     }
 
@@ -118,7 +117,7 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
      * @param options
      * @see MongoRepositoryOptions
      */
-    public MongoBaseRepositoryImpl(final MongoRepositoryOptions options) {
+    public AbstractMongoBaseRepository(final MongoRepositoryOptions options) {
         this(options.connString, options.dbName, options.collectionName, options.writeConcern, options.readPreference, options.sequence);
     }
 
@@ -177,36 +176,16 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
      */
     protected BsonDocument toBsonDocument(final TEntity entity) {
 
-        return new BsonDocumentWrapper<TEntity>(entity, pojoCodecRegistry.get(entityClazz));
+        return Common.convertToBsonDocument(entity, pojoCodecRegistry.get(entityClazz));
     }
 
     /**
      * @param includeFields
      * @return
      */
-    public Bson IncludeFields(final List<String> includeFields) {
-
-        Bson projection = null;
-        if (includeFields != null && includeFields.size() > 0) {
-            projection = Projections.include(includeFields);
-        }
-
-        return projection;
+    protected Bson includeFields(final List<String> includeFields) {
+        return Common.includeFields(includeFields);
     }
-
-
-//    public Bson CreateSortBson(List<String> fieldNames, SortType sortType) {
-//
-//        Bson sort = null;
-//        if (sortType == SortType.Ascending) {
-//            sort = Sorts.ascending(fieldNames);
-//        }
-//        else{
-//            sort = Sorts.descending(fieldNames);
-//        }
-//
-//        return sort;
-//    }
 
 
     /**
@@ -218,7 +197,7 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
      * @param hint
      * @return
      */
-    public FindIterable<TEntity> findOptions(final FindIterable<TEntity> findIterable, final Bson projection, final Bson sort
+    protected FindIterable<TEntity> findOptions(final FindIterable<TEntity> findIterable, final Bson projection, final Bson sort
             , final int limit, final int skip, final BsonValue hint) {
 
         FindIterable<TEntity> filter = findIterable;
@@ -247,40 +226,24 @@ public abstract class MongoBaseRepositoryImpl<TEntity extends Entity<TKey>, TKey
 
     }
 
-
-    /// <summary>
-    /// ID赋值
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="id"></param>
+    /**
+     * ID赋值
+     *
+     * @param entity
+     * @param id
+     */
     protected void assignmentEntityID(final TEntity entity, final long id) {
-        Entity<TKey> tEntity = entity;
-
-//        if (entity instanceof EntityIntKey) {
-//            ((EntityIntKey) entity).setId((int) id);
-//        } else if (entity instanceof EntityLongKey) {
-//            ((EntityLongKey) entity).setId(id);
-//        }
-
-        if (keyClazz.equals(Integer.class)) {
-            ((Entity<Integer>) tEntity).setId((int) id);
-        } else if (keyClazz.equals(Long.class)) {
-            ((Entity<Long>) tEntity).setId(id);
-        } else if (keyClazz.equals(Short.class)) {
-            ((Entity<Short>) tEntity).setId((short) id);
-        }
-
+        Common.assignmentEntityID(keyClazz, entity, id);
     }
 
-
-    /// <summary>
-    /// ID赋值
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="id"></param>
+    /**
+     * ID赋值
+     *
+     * @param entity
+     * @param id
+     */
     protected void assignmentEntityID(final TEntity entity, final ObjectId id) {
-        Entity<ObjectId> tEntity = (Entity<ObjectId>) entity;
-        tEntity.setId(id);
+        Common.assignmentEntityID(entity, id);
 
     }
 

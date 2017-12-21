@@ -44,7 +44,7 @@ public class MongoReaderRepositoryTest {
         ArrayList<User> list = null;
 
         MongoReaderRepository<User, Long> repos = new UserRepositoryImpl();
-        list = repos.getList(null);
+        list = repos.getList(FindOptions.Empty());
         Assert.assertNotEquals(list.size(), 0);
 
         list = repos.getList(Filters.gte("_id", 1));

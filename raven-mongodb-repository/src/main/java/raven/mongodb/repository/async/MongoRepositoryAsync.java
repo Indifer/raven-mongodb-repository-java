@@ -1,43 +1,29 @@
-package raven.mongodb.repository;
+package raven.mongodb.repository.async;
 
 import com.mongodb.WriteConcern;
-import com.mongodb.client.model.FindOneAndDeleteOptions;
-import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.conversions.Bson;
 import raven.mongodb.repository.exceptions.FailedException;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-/**
- * @param <TEntity>
- * @param <TKey>
- */
-public interface MongoRepository<TEntity, TKey>
-        extends MongoReaderRepository<TEntity, TKey> {
+public interface MongoRepositoryAsync<TEntity, TKey>
+        extends MongoReaderRepositoryAsync<TEntity, TKey> {
 
     /**
      * @return
      * @throws FailedException
      */
-    long createIncID() throws FailedException;
+    CompletableFuture<Long> createIncIDAsync() throws FailedException;
 
     /**
      * @param inc
      * @return
      * @throws FailedException
      */
-    long createIncID(long inc) throws FailedException;
-
-    /**
-     * @param inc
-     * @param iteration
-     * @return
-     * @throws FailedException
-     */
-    long createIncID(long inc, int iteration) throws FailedException;
+    CompletableFuture<Long> createIncIDAsync(long inc) throws FailedException;
 
     //#region get
 
@@ -47,7 +33,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param entity
      * @throws FailedException
      */
-    void createIncID(TEntity entity)
+    CompletableFuture createIncIDAsync(TEntity entity)
             throws FailedException;
 
     /**
@@ -61,7 +47,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param entity
      * @throws FailedException
      */
-    void insert(TEntity entity)
+    CompletableFuture insertAsync(TEntity entity)
             throws FailedException;
 
     /**
@@ -69,14 +55,14 @@ public interface MongoRepository<TEntity, TKey>
      * @param writeConcern
      * @throws FailedException
      */
-    void insert(TEntity entity, WriteConcern writeConcern)
+    CompletableFuture insertAsync(TEntity entity, WriteConcern writeConcern)
             throws FailedException;
 
     /**
      * @param entitys
      * @throws FailedException
      */
-    void insertBatch(List<TEntity> entitys)
+    CompletableFuture insertBatchAsync(List<TEntity> entitys)
             throws FailedException;
 
     /**
@@ -84,7 +70,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param writeConcern
      * @throws FailedException
      */
-    void insertBatch(List<TEntity> entitys, WriteConcern writeConcern)
+    CompletableFuture insertBatchAsync(List<TEntity> entitys, WriteConcern writeConcern)
             throws FailedException;
 
 
@@ -95,7 +81,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param updateEntity
      * @return
      */
-    UpdateResult updateOne(Bson filter, TEntity updateEntity)
+    CompletableFuture<UpdateResult> updateOneAsync(Bson filter, TEntity updateEntity)
             throws FailedException;
 
     /**
@@ -106,7 +92,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param isUpsert
      * @return
      */
-    UpdateResult updateOne(Bson filter, TEntity updateEntity, Boolean isUpsert)
+    CompletableFuture<UpdateResult> updateOneAsync(Bson filter, TEntity updateEntity, Boolean isUpsert)
             throws FailedException;
 
     /**
@@ -118,7 +104,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param writeConcern
      * @return
      */
-    UpdateResult updateOne(Bson filter, TEntity updateEntity, Boolean isUpsert, WriteConcern writeConcern)
+    CompletableFuture<UpdateResult> updateOneAsync(Bson filter, TEntity updateEntity, Boolean isUpsert, WriteConcern writeConcern)
             throws FailedException;
 
     /**
@@ -128,7 +114,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param update
      * @return
      */
-    UpdateResult updateOne(Bson filter, Bson update);
+    CompletableFuture<UpdateResult> updateOneAsync(Bson filter, Bson update);
 
     /**
      * 修改单条数据
@@ -138,7 +124,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param isUpsert
      * @return
      */
-    UpdateResult updateOne(Bson filter, Bson update, Boolean isUpsert);
+    CompletableFuture<UpdateResult> updateOneAsync(Bson filter, Bson update, Boolean isUpsert);
 
     /**
      * 修改单条数据
@@ -149,7 +135,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param writeConcern
      * @return
      */
-    UpdateResult updateOne(Bson filter, Bson update, Boolean isUpsert, WriteConcern writeConcern);
+    CompletableFuture<UpdateResult> updateOneAsync(Bson filter, Bson update, Boolean isUpsert, WriteConcern writeConcern);
 
     /**
      * 修改多条数据
@@ -158,7 +144,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param update
      * @return
      */
-    UpdateResult updateMany(Bson filter, Bson update);
+    CompletableFuture<UpdateResult> updateManyAsync(Bson filter, Bson update);
 
     /**
      * 修改多条数据
@@ -168,14 +154,14 @@ public interface MongoRepository<TEntity, TKey>
      * @param writeConcern
      * @return
      */
-    UpdateResult updateMany(Bson filter, Bson update, WriteConcern writeConcern);
+    CompletableFuture<UpdateResult> updateManyAsync(Bson filter, Bson update, WriteConcern writeConcern);
 
     /**
      * @param filter
      * @param update
      * @return
      */
-    TEntity findOneAndUpdate(Bson filter, Bson update);
+    CompletableFuture<TEntity> findOneAndUpdateAsync(Bson filter, Bson update);
 
     /**
      * @param filter
@@ -184,7 +170,7 @@ public interface MongoRepository<TEntity, TKey>
      * @param sort
      * @return
      */
-    TEntity findOneAndUpdate(Bson filter, Bson update, Boolean isUpsert, Bson sort);
+    CompletableFuture<TEntity> findOneAndUpdateAsync(Bson filter, Bson update, Boolean isUpsert, Bson sort);
 
     /**
      * @param filter
@@ -192,7 +178,7 @@ public interface MongoRepository<TEntity, TKey>
      * @return
      * @throws FailedException
      */
-    TEntity findOneAndUpdate(Bson filter, TEntity entity)
+    CompletableFuture<TEntity> findOneAndUpdateAsync(Bson filter, TEntity entity)
             throws FailedException;
 
     /**
@@ -203,59 +189,58 @@ public interface MongoRepository<TEntity, TKey>
      * @return
      * @throws FailedException
      */
-    TEntity findOneAndUpdate(Bson filter, TEntity entity, Boolean isUpsert, Bson sort)
+    CompletableFuture<TEntity> findOneAndUpdateAsync(Bson filter, TEntity entity, Boolean isUpsert, Bson sort)
             throws FailedException;
 
     /**
      * @param filter
      * @return
      */
-    TEntity findOneAndDelete(Bson filter);
+    CompletableFuture<TEntity> findOneAndDeleteAsync(Bson filter);
 
     /**
      * @param filter
      * @param sort
      * @return
      */
-    TEntity findOneAndDelete(Bson filter, Bson sort);
+    CompletableFuture<TEntity> findOneAndDeleteAsync(Bson filter, Bson sort);
 
     /**
      * @param id
      * @return
      */
-    DeleteResult deleteOne(TKey id);
+    CompletableFuture<DeleteResult> deleteOneAsync(TKey id);
 
     /**
      * @param id
      * @param writeConcern
      * @return
      */
-    DeleteResult deleteOne(TKey id, WriteConcern writeConcern);
+    CompletableFuture<DeleteResult> deleteOneAsync(TKey id, WriteConcern writeConcern);
 
     /**
      * @param filter
      * @return
      */
-    DeleteResult deleteOne(Bson filter);
-
-    /**
-     * @param filter
-     * @param writeConcern WriteConcern
-     * @return
-     */
-    DeleteResult deleteOne(Bson filter, WriteConcern writeConcern);
-
-    /**
-     * @param filter
-     * @return
-     */
-    DeleteResult deleteMany(Bson filter);
+    CompletableFuture<DeleteResult> deleteOneAsync(Bson filter);
 
     /**
      * @param filter
      * @param writeConcern WriteConcern
      * @return
      */
-    DeleteResult deleteMany(Bson filter, WriteConcern writeConcern);
+    CompletableFuture<DeleteResult> deleteOneAsync(Bson filter, WriteConcern writeConcern);
 
+    /**
+     * @param filter
+     * @return
+     */
+    CompletableFuture<DeleteResult> deleteManyAsync(Bson filter);
+
+    /**
+     * @param filter
+     * @param writeConcern WriteConcern
+     * @return
+     */
+    CompletableFuture<DeleteResult> deleteManyAsync(Bson filter, WriteConcern writeConcern);
 }
