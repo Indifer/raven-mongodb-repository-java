@@ -8,12 +8,14 @@ import org.bson.BsonValue;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.codecs.pojo.PropertyCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import raven.data.entity.Entity;
 import raven.mongodb.repository.MongoRepositoryOptions;
 import raven.mongodb.repository.MongoSequence;
 import raven.mongodb.repository.Common;
+import raven.mongodb.repository.PojoCodecRegistrys;
 import raven.mongodb.repository.conventions.CustomConventions;
 
 import java.lang.reflect.ParameterizedType;
@@ -70,10 +72,12 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
         isAutoIncrClass = Common.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
         pojoCodecRegistry = MongoClients.getDefaultCodecRegistry();
-
-        ClassModel<TEntity> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();
-        PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(classModel).build();
-        pojoCodecRegistry = fromRegistries(pojoCodecRegistry, fromProviders(pojoCodecProvider));
+        pojoCodecRegistry = PojoCodecRegistrys.registry(pojoCodecRegistry, entityClazz);
+//        PropertyCodecProvider propertyCodecProvider = new raven.mongodb.repository.ValueEnumPropertyCodecProvider(pojoCodecRegistry);
+//
+//        ClassModel<TEntity> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();
+//        PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(classModel).register(propertyCodecProvider).build();
+//        pojoCodecRegistry = fromRegistries(pojoCodecRegistry, fromProviders(pojoCodecProvider));
     }
 
     /**
@@ -183,7 +187,6 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
     protected Bson includeFields(final List<String> includeFields) {
         return Common.includeFields(includeFields);
     }
-
 
 
     /**

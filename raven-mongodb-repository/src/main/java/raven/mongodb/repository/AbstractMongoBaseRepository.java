@@ -3,12 +3,11 @@ package raven.mongodb.repository;
 import com.mongodb.*;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
-import org.bson.BsonDocument;
-import org.bson.BsonDocumentWrapper;
-import org.bson.BsonValue;
+import org.bson.*;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.bson.codecs.pojo.PropertyCodecProvider;
 import org.bson.conversions.Bson;
 
 import org.bson.types.ObjectId;
@@ -59,7 +58,6 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
     public MongoDatabase getDatabase() {
 
         return _mongoSession.getDatabase().withCodecRegistry(pojoCodecRegistry);
-
     }
 
     //#region 构造函数
@@ -72,10 +70,12 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
         isAutoIncrClass = Common.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
         pojoCodecRegistry = MongoClient.getDefaultCodecRegistry();
-
-        ClassModel<TEntity> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();
-        PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(classModel).build();
-        pojoCodecRegistry = fromRegistries(pojoCodecRegistry, fromProviders(pojoCodecProvider));
+        pojoCodecRegistry = PojoCodecRegistrys.registry(pojoCodecRegistry, entityClazz);
+//        PropertyCodecProvider propertyCodecProvider = new raven.mongodb.repository.ValueEnumPropertyCodecProvider(pojoCodecRegistry);
+//
+//        ClassModel<TEntity> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();
+//        PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(classModel).register(propertyCodecProvider).build();
+//        pojoCodecRegistry = fromRegistries(pojoCodecRegistry, fromProviders(pojoCodecProvider));
     }
 
     /**

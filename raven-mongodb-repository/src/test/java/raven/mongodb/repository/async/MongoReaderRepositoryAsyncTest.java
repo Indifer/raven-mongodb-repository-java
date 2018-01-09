@@ -1,15 +1,17 @@
 package raven.mongodb.repository.async;
 
-import com.mongodb.async.SingleResultCallback;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
+import org.bson.BSON;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import raven.data.entity.ValueEnumType;
 import raven.mongodb.repository.FindOptions;
+import raven.mongodb.repository.entitys.Status;
 import raven.mongodb.repository.entitys.User;
-import raven.mongodb.repository.entitys.User2;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -33,6 +35,11 @@ public class MongoReaderRepositoryAsyncTest {
             User user = new User();
             user.setName(UUID.randomUUID().toString());
             user.setAge(i * 10);
+
+            if (i % 2 == 1) {
+                user.setStatus(Status.Delete);
+            }
+
             list.add(user);
         }
 
@@ -52,6 +59,9 @@ public class MongoReaderRepositoryAsyncTest {
         Assert.assertNotEquals(list.size(), 0);
 
         for (User user : list) {
+            if (user.getId() % 2 == 1) {
+                Assert.assertEquals(user.getStatus(), Status.Delete);
+            }
             Assert.assertNotNull(user.getName());
         }
 
@@ -89,6 +99,10 @@ public class MongoReaderRepositoryAsyncTest {
 
     @Test
     public void count() throws Exception {
+
+        Status status = Status.Normal;
+        System.out.println(status == Status.Delete);
+        System.out.println(status == Status.Normal);
 
         MongoRepositoryAsyncImpl<User, Long> repos = new UserRepositoryAsyncImpl();
         Long count = repos.countAsync(Filters.gte("_id", 1)).get();

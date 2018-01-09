@@ -4,6 +4,10 @@ public class MongoSequence {
 
     private String sequenceName;
 
+    private String collectionName;
+
+    private String incrementID;
+
     public String getSequenceName() {
         return sequenceName;
     }
@@ -12,8 +16,6 @@ public class MongoSequence {
         this.sequenceName = sequenceName;
     }
 
-    private String collectionName;
-
     public String getCollectionName() {
         return collectionName;
     }
@@ -21,8 +23,6 @@ public class MongoSequence {
     public void setCollectionName(String collectionName) {
         this.collectionName = collectionName;
     }
-
-    private String incrementID;
 
     public String getIncrementID() {
         return incrementID;
