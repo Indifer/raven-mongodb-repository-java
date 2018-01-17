@@ -11,7 +11,7 @@ public interface VirtualDelete {
      *
      * @return
      */
-    boolean getIsDel();
+    boolean isDel();
 
 
     /**
@@ -19,5 +19,5 @@ public interface VirtualDelete {
      *
      * @return
      */
-    void setIsDel(boolean isDel);
+    void setDel(boolean del);
 }

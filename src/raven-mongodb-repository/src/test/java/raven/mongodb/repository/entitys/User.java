@@ -17,7 +17,7 @@ public final class User implements AutoIncr<Long>, VirtualDelete {
 
     private Status status;
 
-    private boolean isDel;
+    private boolean del;
 
     private Date createDate;
 
@@ -54,13 +54,13 @@ public final class User implements AutoIncr<Long>, VirtualDelete {
     }
 
     @Override
-    public boolean getIsDel() {
-        return isDel;
+    public boolean isDel() {
+        return del;
     }
 
     @Override
-    public void setIsDel(boolean del) {
-        isDel = del;
+    public void setDel(boolean del) {
+        this.del = del;
     }
 
     public Date getCreateDate() {
