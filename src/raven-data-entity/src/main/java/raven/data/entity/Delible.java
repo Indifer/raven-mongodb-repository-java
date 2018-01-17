@@ -4,7 +4,7 @@ package raven.data.entity;
  * @author yi.liang
  * @since JDK1.8
  */
-public interface VirtualDelete {
+public interface Delible {
 
     /**
      * 是否虚拟删除

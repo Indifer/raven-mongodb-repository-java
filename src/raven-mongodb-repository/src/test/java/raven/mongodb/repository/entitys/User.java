@@ -7,7 +7,7 @@ import raven.data.entity.annotations.*;
 import java.util.Date;
 
 @BsonPropertyFormat(BsonPropertyFormatType.PascalCase)
-public final class User implements AutoIncr<Long>, VirtualDelete {
+public final class User implements AutoIncr<Long>, Delible {
     @BsonId()
     private Long id;
 
