@@ -24,8 +24,9 @@ public class MongoRepositoryOptions {
     /**
      * @param connString 数据库连接节点
      */
-    public void setConnString(String connString) {
+    public MongoRepositoryOptions connString(String connString) {
         this.connString = connString;
+        return this;
     }
 
     /**
@@ -42,8 +43,9 @@ public class MongoRepositoryOptions {
      *
      * @param dbName 数据库名称
      */
-    public void setDbName(String dbName) {
+    public MongoRepositoryOptions dbName(String dbName) {
         this.dbName = dbName;
+        return this;
     }
 
     /**
@@ -55,8 +57,9 @@ public class MongoRepositoryOptions {
         return collectionName;
     }
 
-    public void setCollectionName(String collectionName) {
+    public MongoRepositoryOptions collectionName(String collectionName) {
         this.collectionName = collectionName;
+        return this;
     }
 
     /**
@@ -68,8 +71,9 @@ public class MongoRepositoryOptions {
         return writeConcern;
     }
 
-    public void setWriteConcern(WriteConcern writeConcern) {
+    public MongoRepositoryOptions writeConcern(WriteConcern writeConcern) {
         this.writeConcern = writeConcern;
+        return this;
     }
 
     /**
@@ -81,8 +85,9 @@ public class MongoRepositoryOptions {
         return readPreference;
     }
 
-    public void setReadPreference(ReadPreference readPreference) {
+    public MongoRepositoryOptions readPreference(ReadPreference readPreference) {
         this.readPreference = readPreference;
+        return this;
     }
 
     /**
@@ -94,8 +99,9 @@ public class MongoRepositoryOptions {
         return sequence;
     }
 
-    public void setSequence(MongoSequence sequence) {
+    public MongoRepositoryOptions sequence(MongoSequence sequence) {
         this.sequence = sequence;
+        return this;
     }
 
     /**

@@ -10,8 +10,8 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PropertyCodecProvider;
 import org.bson.codecs.pojo.PropertyCodecRegistry;
 import org.bson.codecs.pojo.TypeWithTypeParameters;
-import raven.data.entity.ValueEnumType;
-import raven.data.entity.ValueEnumTypes;
+import raven.data.entity.ValueEnum;
+import raven.data.entity.ValueEnumHelper;
 
 /**
  * @author yi.liang
@@ -20,7 +20,7 @@ import raven.data.entity.ValueEnumTypes;
 final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvider {
     private final CodecRegistry codecRegistry;
 
-    private final Class<ValueEnumType> valueEnumTypeClass = ValueEnumType.class;
+    private final Class<ValueEnum> valueEnumTypeClass = ValueEnum.class;
 
     public ValueEnumPropertyCodecProvider(final CodecRegistry codecRegistry) {
         this.codecRegistry = codecRegistry;
@@ -40,7 +40,7 @@ final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvid
         return null;
     }
 
-    private static class EnumCodec<T extends ValueEnumType> implements Codec<T> {
+    private static class EnumCodec<T extends ValueEnum> implements Codec<T> {
         private final Class<T> clazz;
 
         EnumCodec(final Class<T> clazz) {
@@ -71,7 +71,7 @@ final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvid
 //                return Enum.valueOf(clazz, reader.readString());
 //            }
 
-            return ValueEnumTypes.valueOf(clazz, reader.readInt32());
+            return ValueEnumHelper.valueOf(clazz, reader.readInt32());
         }
     }
 

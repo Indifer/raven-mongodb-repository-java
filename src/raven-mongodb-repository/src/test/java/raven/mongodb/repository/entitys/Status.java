@@ -16,9 +16,9 @@ package raven.mongodb.repository.entitys;
 //    }
 //}
 
-import raven.data.entity.ValueEnumType;
+import raven.data.entity.ValueEnum;
 
-public enum Status implements ValueEnumType {
+public enum Status implements ValueEnum {
     Normal(1), Delete(-1);
 
     private int value;

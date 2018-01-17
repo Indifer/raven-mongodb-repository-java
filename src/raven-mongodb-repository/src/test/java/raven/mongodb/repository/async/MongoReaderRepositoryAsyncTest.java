@@ -2,16 +2,13 @@ package raven.mongodb.repository.async;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
-import org.bson.BSON;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import raven.data.entity.ValueEnumType;
 import raven.mongodb.repository.FindOptions;
 import raven.mongodb.repository.entitys.Status;
 import raven.mongodb.repository.entitys.User;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;

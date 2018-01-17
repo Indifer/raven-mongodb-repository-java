@@ -21,7 +21,7 @@ public class PojoCodecRegistrys {
      * @return
      */
     public static CodecRegistry registry(CodecRegistry pojoCodecRegistry, Class<?> entityClazz) {
-        //registry ValueEnumType CodecProvider
+        //registry ValueEnum CodecProvider
         PropertyCodecProvider propertyCodecProvider = new raven.mongodb.repository.ValueEnumPropertyCodecProvider(pojoCodecRegistry);
 
         //registry conventions
