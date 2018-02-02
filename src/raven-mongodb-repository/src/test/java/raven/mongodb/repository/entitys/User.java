@@ -2,7 +2,7 @@ package raven.mongodb.repository.entitys;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 import raven.data.entity.*;
-import raven.data.entity.annotations.*;
+import raven.data.entity.annotation.*;
 
 import java.util.Date;
 

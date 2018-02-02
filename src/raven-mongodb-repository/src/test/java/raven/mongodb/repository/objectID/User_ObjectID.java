@@ -4,8 +4,8 @@ import org.bson.codecs.pojo.annotations.*;
 
 import org.bson.types.ObjectId;
 import raven.data.entity.*;
-import raven.data.entity.annotations.PropertyFormat;
-import raven.data.entity.annotations.PropertyFormatType;
+import raven.data.entity.annotation.PropertyFormat;
+import raven.data.entity.annotation.PropertyFormatType;
 
 import java.util.Date;
 

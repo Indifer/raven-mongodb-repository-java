@@ -2,8 +2,8 @@ package raven.mongodb.repository.stringID;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 import raven.data.entity.Entity;
-import raven.data.entity.annotations.PropertyFormat;
-import raven.data.entity.annotations.PropertyFormatType;
+import raven.data.entity.annotation.PropertyFormat;
+import raven.data.entity.annotation.PropertyFormatType;
 
 import java.util.*;
 

@@ -5,7 +5,7 @@ import org.bson.codecs.pojo.Convention;
 import org.bson.codecs.pojo.PropertyModelBuilder;
 
 import org.bson.codecs.pojo.annotations.BsonProperty;
-import raven.data.entity.annotations.*;
+import raven.data.entity.annotation.*;
 
 import java.lang.annotation.Annotation;
 
