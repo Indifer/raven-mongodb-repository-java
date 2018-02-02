@@ -4,15 +4,15 @@ import org.bson.codecs.pojo.annotations.*;
 
 import org.bson.types.ObjectId;
 import raven.data.entity.*;
-import raven.data.entity.annotations.BsonPropertyFormat;
-import raven.data.entity.annotations.BsonPropertyFormatType;
+import raven.data.entity.annotations.PropertyFormat;
+import raven.data.entity.annotations.PropertyFormatType;
 
 import java.util.Date;
 
 /**
  * User实体-自生成的ObjectId
  */
-@BsonPropertyFormat(BsonPropertyFormatType.PascalCase)
+@PropertyFormat(PropertyFormatType.PascalCase)
 public class User_ObjectID implements Entity<ObjectId> {
 
     //主键

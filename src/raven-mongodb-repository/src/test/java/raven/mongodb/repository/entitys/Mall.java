@@ -2,10 +2,10 @@ package raven.mongodb.repository.entitys;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 import raven.data.entity.Entity;
-import raven.data.entity.annotations.BsonPropertyFormat;
-import raven.data.entity.annotations.BsonPropertyFormatType;
+import raven.data.entity.annotations.PropertyFormat;
+import raven.data.entity.annotations.PropertyFormatType;
 
-@BsonPropertyFormat(BsonPropertyFormatType.PascalCase)
+@PropertyFormat(PropertyFormatType.PascalCase)
 public class Mall implements Entity<String>{
 
     @BsonId()

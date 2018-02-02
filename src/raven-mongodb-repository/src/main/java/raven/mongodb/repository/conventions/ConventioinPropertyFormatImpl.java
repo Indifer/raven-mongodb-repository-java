@@ -13,7 +13,7 @@ import java.lang.annotation.Annotation;
  * @author yi.liang
  * @since JDK1.8
  */
-final class ConventioinFormatPropertyImpl implements Convention {
+final class ConventioinPropertyFormatImpl implements Convention {
 
     /**
      * @param classModelBuilder
@@ -21,19 +21,19 @@ final class ConventioinFormatPropertyImpl implements Convention {
     @Override
     public void apply(final ClassModelBuilder<?> classModelBuilder) {
 
-        BsonPropertyFormatType formatType = BsonPropertyFormatType.CamelCase;
+        PropertyFormatType formatType = PropertyFormatType.CamelCase;
         for (final Annotation annotation : classModelBuilder.getAnnotations()) {
-            if (annotation instanceof BsonPropertyFormat) {
-                formatType = ((BsonPropertyFormat) annotation).value();
+            if (annotation instanceof PropertyFormat) {
+                formatType = ((PropertyFormat) annotation).value();
                 break;
             }
         }
 
-        if (formatType == BsonPropertyFormatType.CamelCase)
+        if (formatType == PropertyFormatType.CamelCase)
             return;
 
         for (PropertyModelBuilder<?> propertyModelBuilder : classModelBuilder.getPropertyModelBuilders()) {
-            formatPropertyAnnotations(classModelBuilder, propertyModelBuilder);
+            propertyFormatAnnotations(classModelBuilder, propertyModelBuilder);
         }
         //processCreatorAnnotation(classModelBuilder);
         //cleanPropertyBuilders(classModelBuilder);
@@ -44,7 +44,7 @@ final class ConventioinFormatPropertyImpl implements Convention {
      * @param classModelBuilder
      * @param propertyModelBuilder
      */
-    private void formatPropertyAnnotations(final ClassModelBuilder<?> classModelBuilder,
+    private void propertyFormatAnnotations(final ClassModelBuilder<?> classModelBuilder,
                                            final PropertyModelBuilder<?> propertyModelBuilder) {
 
         for (Annotation annotation : propertyModelBuilder.getReadAnnotations()) {

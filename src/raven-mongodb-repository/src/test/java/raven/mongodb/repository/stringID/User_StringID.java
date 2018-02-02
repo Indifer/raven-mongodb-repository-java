@@ -2,15 +2,15 @@ package raven.mongodb.repository.stringID;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 import raven.data.entity.Entity;
-import raven.data.entity.annotations.BsonPropertyFormat;
-import raven.data.entity.annotations.BsonPropertyFormatType;
+import raven.data.entity.annotations.PropertyFormat;
+import raven.data.entity.annotations.PropertyFormatType;
 
 import java.util.*;
 
 /**
  * User实体-自拼接String主键
  */
-@BsonPropertyFormat(BsonPropertyFormatType.PascalCase)
+@PropertyFormat(PropertyFormatType.PascalCase)
 public class User_StringID implements Entity<String> {
 
     //主键

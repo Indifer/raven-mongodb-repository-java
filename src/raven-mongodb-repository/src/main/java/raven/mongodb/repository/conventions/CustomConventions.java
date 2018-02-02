@@ -18,13 +18,13 @@ public final class CustomConventions {
     /**
      *
      */
-    public static final Convention FORMAT_PROPERTY_CONVENTION = new ConventioinFormatPropertyImpl();
+    public static final Convention PROPERTY_FORMAT_CONVENTION = new ConventioinPropertyFormatImpl();
 
     /**
      *
      */
     public static final List<Convention> DEFAULT_CONVENTIONS =
-            unmodifiableList(asList(CLASS_AND_PROPERTY_CONVENTION, ANNOTATION_CONVENTION, FORMAT_PROPERTY_CONVENTION));
+            unmodifiableList(asList(CLASS_AND_PROPERTY_CONVENTION, ANNOTATION_CONVENTION, PROPERTY_FORMAT_CONVENTION));
 
 
     /**
