@@ -13,19 +13,32 @@ import org.bson.codecs.pojo.TypeWithTypeParameters;
 import raven.data.entity.ValueEnum;
 import raven.data.entity.ValueEnumHelper;
 
+import java.util.HashMap;
+
 /**
  * @author yi.liang
  * @since JDK1.8
  */
 final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvider {
+
     private final CodecRegistry codecRegistry;
+    private final static Class<ValueEnum> valueEnumTypeClass = ValueEnum.class;
 
-    private final Class<ValueEnum> valueEnumTypeClass = ValueEnum.class;
-
+    /**
+     *
+     * @param codecRegistry
+     */
     public ValueEnumPropertyCodecProvider(final CodecRegistry codecRegistry) {
         this.codecRegistry = codecRegistry;
     }
 
+    /**
+     *
+     * @param type
+     * @param propertyCodecRegistry
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public <T> Codec<T> get(final TypeWithTypeParameters<T> type, final PropertyCodecRegistry propertyCodecRegistry) {
@@ -40,22 +53,24 @@ final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvid
         return null;
     }
 
+    /**
+     *
+     * @param <T>
+     */
     private static class EnumCodec<T extends ValueEnum> implements Codec<T> {
         private final Class<T> clazz;
 
+        private HashMap<Integer, ValueEnum> valueMap;
+
         EnumCodec(final Class<T> clazz) {
             this.clazz = clazz;
+            valueMap = ValueEnumHelper.getValueMap(clazz);
         }
 
         @Override
         public void encode(final BsonWriter writer, final T value, final EncoderContext encoderContext) {
-//            if (clazz.isAssignableFrom(valueEnumTypeClass)) {
-//                writer.writeInt32(((ValueEnum) value).encode());
-//            } else {
-//                writer.writeString(value.name());
-//            }
-            writer.writeInt32(value.getValue());
 
+            writer.writeInt32(value.getValue());
         }
 
         @Override
@@ -65,13 +80,8 @@ final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvid
 
         @Override
         public T decode(final BsonReader reader, final DecoderContext decoderContext) {
-//            if (clazz.isAssignableFrom(valueEnumTypeClass)) {
-//                return null;
-//            } else {
-//                return Enum.valueOf(clazz, reader.readString());
-//            }
 
-            return ValueEnumHelper.valueOf(clazz, reader.readInt32());
+            return (T) valueMap.get(reader.readInt32());
         }
     }
 
