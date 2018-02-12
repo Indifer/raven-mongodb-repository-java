@@ -72,9 +72,8 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @param entity
      * @throws FailedException
      */
-    //@Override
-    public CompletableFuture createIncIDAsync(final TEntity entity)
-            throws FailedException {
+    @Override
+    public CompletableFuture createIncIDAsync(final TEntity entity) {
         long _id = 0;
         CompletableFuture<Long> future = this.createIncIDAsync();
         return future.thenAccept((id) -> assignmentEntityID(entity, id));
@@ -85,6 +84,7 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      *
      * @param entity
      */
+    @Override
     public void createObjectID(final TEntity entity) {
         ObjectId _id = new ObjectId();
         assignmentEntityID(entity, _id);
@@ -95,18 +95,17 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @return
      * @throws FailedException
      */
-    //@Override
-    public CompletableFuture<Long> createIncIDAsync() throws FailedException {
+    @Override
+    public CompletableFuture<Long> createIncIDAsync() {
         return createIncIDAsync(1);
     }
 
     /**
      * @param inc
      * @return
-     * @throws FailedException
      */
-    //@Override
-    public CompletableFuture<Long> createIncIDAsync(final long inc) throws FailedException {
+    @Override
+    public CompletableFuture<Long> createIncIDAsync(final long inc) {
 
         MongoCollection<BsonDocument> collection = getDatabase().getCollection(super._sequence.getSequenceName(), BsonDocument.class);
         String typeName = getCollectionName();
@@ -125,7 +124,6 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
                 long id = 1;
                 if (result != null) {
                     id = result.getInt64(_sequence.getIncrementID()).longValue();
-                    //id = result[super._sequence.getIncrementID()].AsInt64;
                     future.complete(id);
                 } else {
                     future.completeExceptionally(new FailedException("Failed to get on the IncID"));
@@ -143,6 +141,7 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @return
      * @throws FailedException
      */
+    @Override
     public CompletableFuture insertAsync(final TEntity entity)
             throws FailedException {
         return this.insertAsync(entity, null);
@@ -154,6 +153,7 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @return
      * @throws FailedException
      */
+    @Override
     public CompletableFuture insertAsync(final TEntity entity, final WriteConcern writeConcern)
             throws FailedException {
 
@@ -170,8 +170,10 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
 
         if (isAutoIncrClass) {
             createIncIDAsync(entity).thenRun(runnable);
-        } else if (keyClazz.equals(Common.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
-            createObjectID(entity);
+        } else {
+            if (keyClazz.equals(Common.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
+                createObjectID(entity);
+            }
             runnable.run();
         }
 
@@ -183,8 +185,8 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @param entitys
      * @throws FailedException
      */
-    public CompletableFuture insertBatchAsync(final List<TEntity> entitys)
-            throws FailedException {
+    @Override
+    public CompletableFuture insertBatchAsync(final List<TEntity> entitys) {
         return this.insertBatchAsync(entitys, null);
     }
 
@@ -194,8 +196,8 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @return
      * @throws FailedException
      */
-    public CompletableFuture insertBatchAsync(final List<TEntity> entitys, final WriteConcern writeConcern)
-            throws FailedException {
+    @Override
+    public CompletableFuture insertBatchAsync(final List<TEntity> entitys, final WriteConcern writeConcern) {
 
         final CompletableFuture<Void> resFuture = new CompletableFuture<>();
 
@@ -208,7 +210,6 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
                 }
             });
         };
-
 
         //需要自增的实体
         if (isAutoIncrClass) {
@@ -224,10 +225,12 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
                 runnable.run();
             });
 
-        } else if (keyClazz.equals(Common.OBJECT_ID_CLASS)) {
-            for (TEntity entity : entitys) {
-                if (((Entity<ObjectId>) entity).getId() == null) {
-                    createObjectID(entity);
+        } else {
+            if (keyClazz.equals(Common.OBJECT_ID_CLASS)) {
+                for (TEntity entity : entitys) {
+                    if (((Entity<ObjectId>) entity).getId() == null) {
+                        createObjectID(entity);
+                    }
                 }
             }
             runnable.run();

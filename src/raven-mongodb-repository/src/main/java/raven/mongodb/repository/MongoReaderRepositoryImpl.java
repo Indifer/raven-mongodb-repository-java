@@ -354,6 +354,7 @@ public class MongoReaderRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      * @param countOptions
      * @return
      */
+    @Override
     public long count(final CountOptions countOptions) {
 
         Bson _filter = countOptions.getFilter();

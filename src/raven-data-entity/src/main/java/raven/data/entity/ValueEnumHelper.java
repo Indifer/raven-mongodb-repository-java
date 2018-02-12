@@ -25,7 +25,7 @@ public class ValueEnumHelper {
 
         try {
             Method method = clazz.getMethod("values");
-            ValueEnum[] inter = (ValueEnum[]) method.invoke(null, null);
+            ValueEnum[] inter = (ValueEnum[]) method.invoke(null);
             HashMap<Integer, ValueEnum> map = new HashMap<>(inter.length);
             for (int i = 0; i < inter.length; i++) {
                 ValueEnum valueEnumType = inter[i];

@@ -395,6 +395,7 @@ public class MongoReaderRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * @param countOptions
      * @return
      */
+    @Override
     public CompletableFuture<Long> countAsync(final CountOptions countOptions) {
 
         Bson _filter = countOptions.getFilter();
