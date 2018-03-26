@@ -95,27 +95,12 @@ public class MongoReaderRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      * 根据id获取实体
      *
      * @param id
-     * @param includeFields 查询字段
-     * @param sort          排序
-     * @return
-     */
-    @Override
-    public CompletableFuture<TEntity> getAsync(final TKey id, final List<String> includeFields, final Bson sort) {
-        return this.getAsync(id, includeFields, sort, null, null);
-    }
-
-    /**
-     * 根据id获取实体
-     *
-     * @param id
      * @param includeFields  查询字段
-     * @param sort           排序
-     * @param hint           hint索引
      * @param readPreference 访问设置
      * @return
      */
     @Override
-    public CompletableFuture<TEntity> getAsync(final TKey id, final List<String> includeFields, final Bson sort, final BsonValue hint
+    public CompletableFuture<TEntity> getAsync(final TKey id, final List<String> includeFields
             , final ReadPreference readPreference) {
 
         Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
@@ -126,7 +111,7 @@ public class MongoReaderRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
         }
 
         FindIterable<TEntity> findIterable = super.getCollection(readPreference).find(filter, entityClazz);
-        findIterable = super.findOptions(findIterable, projection, sort, 1, 0, hint);
+        findIterable = super.findOptions(findIterable, projection, null, 1, 0, null);
 
         CompletableFuture<TEntity> future = new CompletableFuture<>();
         findIterable.first((entity, throwable) -> {

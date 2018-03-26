@@ -37,27 +37,25 @@ public interface MongoReaderRepositoryAsync<TEntity, TKey>
      */
     CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields);
 
-    /**
-     * 根据id获取实体
-     *
-     * @param id
-     * @param includeFields 查询字段
-     * @param sort          排序
-     * @return
-     */
-    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields, Bson sort);
+//    /**
+//     * 根据id获取实体
+//     *
+//     * @param id
+//     * @param includeFields 查询字段
+//     * @param sort          排序
+//     * @return
+//     */
+//    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields, Bson sort);
 
     /**
      * 根据id获取实体
      *
      * @param id
      * @param includeFields  查询字段
-     * @param sort           排序
-     * @param hint           hint索引
      * @param readPreference 访问设置
      * @return
      */
-    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields, Bson sort, BsonValue hint
+    CompletableFuture<TEntity> getAsync(TKey id, List<String> includeFields
             , ReadPreference readPreference);
 
 
