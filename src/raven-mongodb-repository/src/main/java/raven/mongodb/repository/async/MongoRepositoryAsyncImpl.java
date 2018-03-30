@@ -119,10 +119,10 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
 
         collection.findOneAndUpdate(filter, updater, options, new SingleResultCallback<BsonDocument>() {
             @Override
-            public void onResult(BsonDocument result, Throwable t) {
+            public void onResult(BsonDocument result, Throwable throwable) {
 
                 long id = 1;
-                if (result != null) {
+                if (throwable == null) {
                     id = result.getInt64(_sequence.getIncrementID()).longValue();
                     future.complete(id);
                 } else {
@@ -162,8 +162,12 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
         final Runnable runnable = () -> {
             collection.insertOne(entity, new SingleResultCallback<Void>() {
                 @Override
-                public void onResult(Void result, Throwable t) {
-                    resFuture.complete(result);
+                public void onResult(Void result, Throwable throwable) {
+                    if (throwable == null) {
+                        resFuture.complete(result);
+                    } else {
+                        resFuture.completeExceptionally(throwable);
+                    }
                 }
             });
         };
@@ -205,8 +209,12 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
         final Runnable runnable = () -> {
             collection.insertMany(entitys, new SingleResultCallback<Void>() {
                 @Override
-                public void onResult(Void result, Throwable t) {
-                    resFuture.complete(result);
+                public void onResult(Void result, Throwable throwable) {
+                    if (throwable == null) {
+                        resFuture.complete(result);
+                    } else {
+                        resFuture.completeExceptionally(new FailedException("Failed to get on the IncID"));
+                    }
                 }
             });
         };

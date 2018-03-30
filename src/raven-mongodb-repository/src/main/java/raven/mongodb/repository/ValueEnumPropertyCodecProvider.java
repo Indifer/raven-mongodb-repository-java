@@ -19,13 +19,12 @@ import java.util.HashMap;
  * @author yi.liang
  * @since JDK1.8
  */
-final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvider {
+public final class ValueEnumPropertyCodecProvider implements PropertyCodecProvider {
 
     private final CodecRegistry codecRegistry;
     private final static Class<ValueEnum> valueEnumTypeClass = ValueEnum.class;
 
     /**
-     *
      * @param codecRegistry
      */
     public ValueEnumPropertyCodecProvider(final CodecRegistry codecRegistry) {
@@ -33,7 +32,6 @@ final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvid
     }
 
     /**
-     *
      * @param type
      * @param propertyCodecRegistry
      * @param <T>
@@ -54,30 +52,49 @@ final public class ValueEnumPropertyCodecProvider implements PropertyCodecProvid
     }
 
     /**
-     *
      * @param <T>
      */
     private static class EnumCodec<T extends ValueEnum> implements Codec<T> {
-        private final Class<T> clazz;
 
+        private final Class<T> clazz;
         private HashMap<Integer, ValueEnum> valueMap;
 
+        /**
+         *
+         * @param clazz
+         */
         EnumCodec(final Class<T> clazz) {
             this.clazz = clazz;
             valueMap = ValueEnumHelper.getValueMap(clazz);
         }
 
+        /**
+         *
+         * @param writer
+         * @param value
+         * @param encoderContext
+         */
         @Override
         public void encode(final BsonWriter writer, final T value, final EncoderContext encoderContext) {
 
             writer.writeInt32(value.getValue());
         }
 
+        /**
+         *
+         * @return
+         */
         @Override
         public Class<T> getEncoderClass() {
             return clazz;
         }
 
+        /**
+         *
+         * @param reader
+         * @param decoderContext
+         * @return
+         */
         @Override
         public T decode(final BsonReader reader, final DecoderContext decoderContext) {
 

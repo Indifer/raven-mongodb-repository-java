@@ -75,8 +75,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
         keyClazz = (Class) params[1];
         isAutoIncrClass = Common.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
-        pojoCodecRegistry = MongoClients.getDefaultCodecRegistry();
-        pojoCodecRegistry = PojoCodecRegistrys.registry(pojoCodecRegistry, entityClazz);
+        pojoCodecRegistry = PojoCodecRegistrys.registry(entityClazz);
 //        PropertyCodecProvider propertyCodecProvider = new raven.mongodb.repository.ValueEnumPropertyCodecProvider(pojoCodecRegistry);
 //
 //        ClassModel<TEntity> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();

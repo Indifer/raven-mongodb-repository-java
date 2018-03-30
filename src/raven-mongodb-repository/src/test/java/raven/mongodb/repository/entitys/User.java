@@ -1,6 +1,7 @@
 package raven.mongodb.repository.entitys;
 
 import org.bson.codecs.pojo.annotations.BsonId;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import raven.data.entity.*;
 import raven.data.entity.annotation.*;
 
@@ -20,6 +21,8 @@ public final class User implements AutoIncr<Long>, Delible {
     private boolean del;
 
     private Date createDate;
+
+    private Mall mall;
 
     public Long getId() {
         return id;
@@ -69,6 +72,14 @@ public final class User implements AutoIncr<Long>, Delible {
 
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
+    }
+
+    public Mall getMall() {
+        return mall;
+    }
+
+    public void setMall(Mall mall) {
+        this.mall = mall;
     }
 
     public User(){

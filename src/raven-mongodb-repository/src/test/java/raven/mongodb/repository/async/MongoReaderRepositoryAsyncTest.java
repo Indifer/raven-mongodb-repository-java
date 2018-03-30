@@ -11,7 +11,9 @@ import raven.mongodb.repository.entitys.User;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Function;
 
 public class MongoReaderRepositoryAsyncTest {
 
@@ -40,8 +42,21 @@ public class MongoReaderRepositoryAsyncTest {
             list.add(user);
         }
 
-        repos.insertBatchAsync(list).join();
+        final CountDownLatch latch2 = new CountDownLatch(1);
+        repos.insertBatchAsync(list).thenRun(() ->{
+            latch2.countDown();
+        }).exceptionally(new Function<Throwable, Void>() {
+            @Override
+            public Void apply(Throwable throwable) {
+                throwable.printStackTrace();
+                return null;
+            }
+        });
+
+        latch2.await();
+        int a = 1;
     }
+
 
     @Test
     public void getList() throws Exception {
