@@ -1,7 +1,9 @@
 package raven.mongodb.repository;
 
 import com.mongodb.MongoClient;
+import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.ClassModel;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.codecs.pojo.PropertyCodecProvider;
 import raven.mongodb.repository.conventions.CustomConventions;
@@ -16,25 +18,29 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
  */
 public class PojoCodecRegistrys {
 
-    /**
-     * @param entityClazz
-     * @return
-     */
-    public static CodecRegistry registry(final Class<?> entityClazz) {
+    private static final CodecRegistry codecRegistry;
+
+    static {
 
         CodecRegistry pojoCodecRegistry = MongoClient.getDefaultCodecRegistry();
         //registry ValueEnum CodecProvider
         PropertyCodecProvider propertyCodecProvider = new raven.mongodb.repository.ValueEnumPropertyCodecProvider(pojoCodecRegistry);
 
-
-        CodecRegistry res = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+        codecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().conventions(CustomConventions.DEFAULT_CONVENTIONS).automatic(true).register(propertyCodecProvider).build()));
 
-        //registry conventions
-//        ClassModel<?> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();
-//        PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(classModel).register(propertyCodecProvider).build();
-//        pojoCodecRegistry = CodecRegistries.fromRegistries(pojoCodecRegistry, CodecRegistries.fromProviders(pojoCodecProvider));
+    }
 
-        return res;
+    /**
+     * @return
+     */
+    public static CodecRegistry defaultCodecRegistry() {
+
+        //registry conventions
+       /* ClassModel<?> classModel = ClassModel.builder(entityClazz).conventions(CustomConventions.DEFAULT_CONVENTIONS).build();
+        PojoCodecProvider pojoCodecProvider = PojoCodecProvider.builder().register(classModel).register(propertyCodecProvider).build();
+        pojoCodecRegistry = CodecRegistries.fromRegistries(pojoCodecRegistry, CodecRegistries.fromProviders(pojoCodecProvider));*/
+
+        return codecRegistry;
     }
 }

@@ -63,7 +63,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
         keyClazz = (Class) params[1];
         isAutoIncrClass = DocumentUtil.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
-        pojoCodecRegistry = PojoCodecRegistrys.registry(entityClazz);
+        pojoCodecRegistry = PojoCodecRegistrys.defaultCodecRegistry();
     }
 
     /**
