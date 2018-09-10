@@ -2,24 +2,16 @@ package raven.mongodb.repository;
 
 import com.mongodb.*;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Projections;
 import org.bson.*;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.ClassModel;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.codecs.pojo.PropertyCodecProvider;
 import org.bson.conversions.Bson;
 
 import org.bson.types.ObjectId;
 import raven.data.entity.*;
-import raven.mongodb.repository.conventions.CustomConventions;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 /**
  * @param <TEntity>
@@ -69,7 +61,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
         entityClazz = (Class) params[0];
         keyClazz = (Class) params[1];
-        isAutoIncrClass = Common.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
+        isAutoIncrClass = DocumentUtil.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
         pojoCodecRegistry = PojoCodecRegistrys.registry(entityClazz);
     }
@@ -172,7 +164,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
      */
     protected BsonDocument toBsonDocument(final TEntity entity) {
 
-        return Common.convertToBsonDocument(entity, pojoCodecRegistry.get(entityClazz));
+        return DocumentUtil.convertToBsonDocument(entity, pojoCodecRegistry.get(entityClazz));
     }
 
     /**
@@ -180,7 +172,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
      * @return
      */
     protected Bson includeFields(final List<String> includeFields) {
-        return Common.includeFields(includeFields);
+        return DocumentUtil.includeFields(includeFields);
     }
 
 
@@ -196,29 +188,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
     protected FindIterable<TEntity> findOptions(final FindIterable<TEntity> findIterable, final Bson projection, final Bson sort
             , final int limit, final int skip, final BsonValue hint) {
 
-        FindIterable<TEntity> filter = findIterable;
-        if (projection != null) {
-            filter = findIterable.projection(projection);
-        }
-
-        if (limit > 0) {
-            filter = findIterable.limit(limit);
-        }
-
-        if (skip > 0) {
-            filter = findIterable.skip(skip);
-        }
-
-        if (sort != null) {
-            filter = findIterable.sort(sort);
-        }
-
-        if (hint != null) {
-            Bson hintBson = new BsonDocument("$hint", hint);
-            filter = findIterable.hint(hintBson);
-        }
-
-        return filter;
+        return DocumentUtil.findOptions(findIterable, projection, sort, limit, skip, hint);
 
     }
 
@@ -229,7 +199,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
      * @param id
      */
     protected void assignmentEntityID(final TEntity entity, final long id) {
-        Common.assignmentEntityID(keyClazz, entity, id);
+        DocumentUtil.assignmentEntityID(keyClazz, entity, id);
     }
 
     /**
@@ -239,7 +209,7 @@ public abstract class AbstractMongoBaseRepository<TEntity extends Entity<TKey>, 
      * @param id
      */
     protected void assignmentEntityID(final TEntity entity, final ObjectId id) {
-        Common.assignmentEntityID(entity, id);
+        DocumentUtil.assignmentEntityID(entity, id);
 
     }
 

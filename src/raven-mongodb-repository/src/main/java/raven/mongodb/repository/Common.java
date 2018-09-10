@@ -1,14 +1,5 @@
 package raven.mongodb.repository;
 
-import com.mongodb.client.model.Projections;
-import org.bson.BsonDocument;
-import org.bson.BsonDocumentWrapper;
-import org.bson.codecs.Encoder;
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-import raven.data.entity.AutoIncr;
-import raven.data.entity.Entity;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -24,73 +15,6 @@ import java.util.jar.JarFile;
  * @since JDK1.8
  */
 public class Common {
-    public static final String PRIMARY_KEY_NAME = "_id";
-
-    public static final Class<AutoIncr> AUTO_INCR_CLASS = AutoIncr.class;
-
-    public static final Class<ObjectId> OBJECT_ID_CLASS = ObjectId.class;
-
-    public static final String CREATE_INSTANCE_METHOD = "createInstance";
-
-
-    /**
-     * @param entity
-     * @return
-     */
-    public static <TEntity> BsonDocument convertToBsonDocument(final TEntity entity, final Encoder<TEntity> encoder) {
-
-        return new BsonDocumentWrapper<TEntity>(entity, encoder);
-    }
-
-    /**
-     * @param includeFields
-     * @return
-     */
-    public static Bson includeFields(final List<String> includeFields) {
-
-        Bson projection = null;
-        if (includeFields != null && includeFields.size() > 0) {
-            projection = Projections.include(includeFields);
-        }
-
-        return projection;
-    }
-
-    /**
-     * ID赋值
-     *
-     * @param keyClazz
-     * @param entity
-     * @param id
-     * @param <TEntity>
-     * @param <TKey>
-     */
-    public static <TEntity extends Entity<TKey>, TKey> void assignmentEntityID(final Class<TKey> keyClazz, final TEntity entity, final long id) {
-        Entity<TKey> tEntity = entity;
-
-        if (keyClazz.equals(Integer.class)) {
-            ((Entity<Integer>) tEntity).setId((int) id);
-        } else if (keyClazz.equals(Long.class)) {
-            ((Entity<Long>) tEntity).setId(id);
-        } else if (keyClazz.equals(Short.class)) {
-            ((Entity<Short>) tEntity).setId((short) id);
-        }
-
-    }
-
-    /**
-     * ID赋值
-     *
-     * @param entity
-     * @param id
-     * @param <TEntity>
-     * @param <TKey>
-     */
-    public static <TEntity extends Entity<TKey>, TKey> void assignmentEntityID(final TEntity entity, final ObjectId id) {
-        Entity<ObjectId> tEntity = (Entity<ObjectId>) entity;
-        tEntity.setId(id);
-
-    }
 
     /**
      * 取得某个接口下所有实现这个接口的类

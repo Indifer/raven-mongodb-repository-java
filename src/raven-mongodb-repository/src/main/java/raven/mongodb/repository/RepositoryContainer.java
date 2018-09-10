@@ -146,9 +146,9 @@ public class RepositoryContainer {
             for (Class clazz : clazzList) {
                 repos = null;
                 try {
-                    Method method = clazz.getDeclaredMethod(Common.CREATE_INSTANCE_METHOD, null);
+                    Method method = clazz.getDeclaredMethod(DocumentUtil.CREATE_INSTANCE_METHOD);
                     method.setAccessible(true);
-                    repos = (MongoBaseRepository) method.invoke(null, null);
+                    repos = (MongoBaseRepository) method.invoke(null);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

@@ -1,9 +1,7 @@
 package raven.mongodb.repository.async;
 
-import com.mongodb.Block;
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;
-import com.mongodb.async.SingleResultCallback;
 import com.mongodb.async.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import org.bson.BsonDocument;
@@ -103,7 +101,7 @@ public class MongoReaderRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
     public CompletableFuture<TEntity> getAsync(final TKey id, final List<String> includeFields
             , final ReadPreference readPreference) {
 
-        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(DocumentUtil.PRIMARY_KEY_NAME, id);
 
         Bson projection = null;
         if (includeFields != null) {
@@ -432,7 +430,7 @@ public class MongoReaderRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
         }
 
         List<String> includeFields = new ArrayList<>(1);
-        includeFields.add(Common.PRIMARY_KEY_NAME);
+        includeFields.add(DocumentUtil.PRIMARY_KEY_NAME);
 
         return this.getAsync(_filter, includeFields, null, hint, readPreference).thenApply(entity -> entity != null);
     }

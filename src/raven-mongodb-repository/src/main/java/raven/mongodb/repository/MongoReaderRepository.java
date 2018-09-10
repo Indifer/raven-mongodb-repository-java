@@ -3,7 +3,6 @@ package raven.mongodb.repository;
 import com.mongodb.ReadPreference;
 import org.bson.BsonValue;
 import org.bson.conversions.Bson;
-import raven.mongodb.repository.exceptions.FailedException;
 
 import java.util.ArrayList;
 import java.util.List;

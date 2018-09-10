@@ -11,14 +11,13 @@ import org.bson.BsonDocument;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import raven.data.entity.Entity;
-import raven.mongodb.repository.Common;
+import raven.mongodb.repository.DocumentUtil;
 import raven.mongodb.repository.MongoRepositoryOptions;
 import raven.mongodb.repository.MongoSequence;
 import raven.mongodb.repository.exceptions.FailedException;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 /**
  * @author yi.liang
@@ -175,7 +174,7 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
         if (isAutoIncrClass) {
             createIncIDAsync(entity).thenRun(runnable);
         } else {
-            if (keyClazz.equals(Common.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
+            if (keyClazz.equals(DocumentUtil.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
                 createObjectID(entity);
             }
             runnable.run();
@@ -234,7 +233,7 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
             });
 
         } else {
-            if (keyClazz.equals(Common.OBJECT_ID_CLASS)) {
+            if (keyClazz.equals(DocumentUtil.OBJECT_ID_CLASS)) {
                 for (TEntity entity : entitys) {
                     if (((Entity<ObjectId>) entity).getId() == null) {
                         createObjectID(entity);
@@ -261,12 +260,12 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
         CompletableFuture<Bson> future = new CompletableFuture<>();
 
         BsonDocument bsDoc = super.toBsonDocument(updateEntity);
-        bsDoc.remove(Common.PRIMARY_KEY_NAME);
+        bsDoc.remove(DocumentUtil.PRIMARY_KEY_NAME);
 
         Bson update = new BsonDocument("$set", bsDoc);
         if (isUpsert && isAutoIncrClass) {
             createIncIDAsync().thenAccept((id) -> {
-                future.complete(Updates.combine(update, Updates.setOnInsert(Common.PRIMARY_KEY_NAME, id)));
+                future.complete(Updates.combine(update, Updates.setOnInsert(DocumentUtil.PRIMARY_KEY_NAME, id)));
             });
         } else {
             future.complete(update);
@@ -595,7 +594,7 @@ public class MongoRepositoryAsyncImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public CompletableFuture<DeleteResult> deleteOneAsync(final TKey id, final WriteConcern writeConcern) {
-        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(DocumentUtil.PRIMARY_KEY_NAME, id);
         return this.deleteOneAsync(filter);
     }
 

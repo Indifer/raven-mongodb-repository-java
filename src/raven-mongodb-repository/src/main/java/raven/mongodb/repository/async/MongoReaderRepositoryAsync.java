@@ -6,7 +6,6 @@ import org.bson.conversions.Bson;
 import raven.mongodb.repository.CountOptions;
 import raven.mongodb.repository.ExistsOptions;
 import raven.mongodb.repository.FindOptions;
-import raven.mongodb.repository.MongoBaseRepository;
 
 import java.util.ArrayList;
 import java.util.List;

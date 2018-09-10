@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class ValueEnumHelper {
 
-    private static HashMap<String, HashMap<Integer, ValueEnum>> cache = new HashMap<>();
+    private static final HashMap<String, HashMap<Integer, ValueEnum>> cache = new HashMap<>();
 
     /**
      * @param clazz

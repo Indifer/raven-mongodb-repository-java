@@ -159,7 +159,7 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
             throws FailedException {
         if (isAutoIncrClass) {
             createIncID(entity);
-        } else if (keyClazz.equals(Common.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
+        } else if (keyClazz.equals(DocumentUtil.OBJECT_ID_CLASS) && ((Entity<ObjectId>) entity).getId() == null) {
             createObjectID(entity);
         }
         super.getCollection(writeConcern).insertOne(entity);
@@ -193,7 +193,7 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
             for (TEntity entity : entitys) {
                 assignmentEntityID(entity, ++id);
             }
-        } else if (keyClazz.equals(Common.OBJECT_ID_CLASS)) {
+        } else if (keyClazz.equals(DocumentUtil.OBJECT_ID_CLASS)) {
             for (TEntity entity : entitys) {
                 if (((Entity<ObjectId>) entity).getId() == null) {
                     createObjectID(entity);
@@ -216,12 +216,12 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
             throws FailedException {
         long id = 0;
         BsonDocument bsDoc = super.toBsonDocument(updateEntity);
-        bsDoc.remove(Common.PRIMARY_KEY_NAME);
+        bsDoc.remove(DocumentUtil.PRIMARY_KEY_NAME);
 
         Bson update = new BsonDocument("$set", bsDoc);
         if (isUpsert && isAutoIncrClass) {
             id = createIncID();
-            update = Updates.combine(update, Updates.setOnInsert(Common.PRIMARY_KEY_NAME, id));
+            update = Updates.combine(update, Updates.setOnInsert(DocumentUtil.PRIMARY_KEY_NAME, id));
         }
 
         return update;
@@ -463,7 +463,7 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public DeleteResult deleteOne(final TKey id) {
-        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(DocumentUtil.PRIMARY_KEY_NAME, id);
         return super.getCollection().deleteOne(filter);
     }
 
@@ -474,7 +474,7 @@ public class MongoRepositoryImpl<TEntity extends Entity<TKey>, TKey>
      */
     @Override
     public DeleteResult deleteOne(final TKey id, final WriteConcern writeConcern) {
-        Bson filter = Filters.eq(Common.PRIMARY_KEY_NAME, id);
+        Bson filter = Filters.eq(DocumentUtil.PRIMARY_KEY_NAME, id);
         return super.getCollection(writeConcern).deleteOne(filter);
     }
 

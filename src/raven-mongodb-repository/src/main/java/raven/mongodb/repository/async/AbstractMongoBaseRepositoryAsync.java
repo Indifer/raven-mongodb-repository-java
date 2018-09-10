@@ -6,24 +6,14 @@ import com.mongodb.async.client.*;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.ClassModel;
-import org.bson.codecs.pojo.PojoCodecProvider;
-import org.bson.codecs.pojo.PropertyCodecProvider;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import raven.data.entity.Entity;
-import raven.mongodb.repository.MongoRepositoryOptions;
-import raven.mongodb.repository.MongoSequence;
-import raven.mongodb.repository.Common;
-import raven.mongodb.repository.PojoCodecRegistrys;
-import raven.mongodb.repository.conventions.CustomConventions;
+import raven.mongodb.repository.*;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 /**
  * @author yi.liang
@@ -73,7 +63,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
         Type[] params = ((ParameterizedType) genType).getActualTypeArguments();
         entityClazz = (Class) params[0];
         keyClazz = (Class) params[1];
-        isAutoIncrClass = Common.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
+        isAutoIncrClass = DocumentUtil.AUTO_INCR_CLASS.isAssignableFrom(entityClazz);
 
         pojoCodecRegistry = PojoCodecRegistrys.registry(entityClazz);
 //        PropertyCodecProvider propertyCodecProvider = new raven.mongodb.repository.ValueEnumPropertyCodecProvider(pojoCodecRegistry);
@@ -180,7 +170,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
      */
     protected BsonDocument toBsonDocument(final TEntity entity) {
 
-        return Common.convertToBsonDocument(entity, pojoCodecRegistry.get(entityClazz));
+        return DocumentUtil.convertToBsonDocument(entity, pojoCodecRegistry.get(entityClazz));
     }
 
     /**
@@ -188,7 +178,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
      * @return
      */
     protected Bson includeFields(final List<String> includeFields) {
-        return Common.includeFields(includeFields);
+        return DocumentUtil.includeFields(includeFields);
     }
 
 
@@ -204,29 +194,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
     protected FindIterable<TEntity> findOptions(final FindIterable<TEntity> findIterable, final Bson projection, final Bson sort
             , final int limit, final int skip, final BsonValue hint) {
 
-        FindIterable<TEntity> filter = findIterable;
-        if (projection != null) {
-            filter = findIterable.projection(projection);
-        }
-
-        if (limit > 0) {
-            filter = findIterable.limit(limit);
-        }
-
-        if (skip > 0) {
-            filter = findIterable.skip(skip);
-        }
-
-        if (sort != null) {
-            filter = findIterable.sort(sort);
-        }
-
-        if (hint != null) {
-            Bson hintBson = new BsonDocument("$hint", hint);
-            filter = findIterable.hint(hintBson);
-        }
-
-        return filter;
+        return DocumentUtil.findOptions(findIterable, projection, sort, limit, skip, hint);
 
     }
 
@@ -237,7 +205,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
      * @param id
      */
     protected void assignmentEntityID(final TEntity entity, final long id) {
-        Common.assignmentEntityID(keyClazz, entity, id);
+        DocumentUtil.assignmentEntityID(keyClazz, entity, id);
     }
 
     /**
@@ -247,7 +215,7 @@ public abstract class AbstractMongoBaseRepositoryAsync<TEntity extends Entity<TK
      * @param id
      */
     protected void assignmentEntityID(final TEntity entity, final ObjectId id) {
-        Common.assignmentEntityID(entity, id);
+        DocumentUtil.assignmentEntityID(entity, id);
 
     }
 
