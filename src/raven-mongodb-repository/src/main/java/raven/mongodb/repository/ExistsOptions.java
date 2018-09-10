@@ -44,7 +44,7 @@ public class ExistsOptions {
     /**
      * @return
      */
-    public static ExistsOptions Empty() {
+    public static ExistsOptions empty() {
         return new ExistsOptions();
     }
 }
